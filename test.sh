@@ -53,7 +53,7 @@ N_CPU=$(grep -c ^processor /proc/cpuinfo)
 EXAMPLES=$(find examples/ -mindepth 1 -type d -not -path examples/offline -not -path examples/open_spiel -not -path examples/baselines)
 
 # Run static type-checking.
-for TESTDIR in acme ${EXAMPLES}; do
+for TESTDIR in acme/${EXAMPLES}; do
   if [`ls *.py | wc -l` != 0]; then
     pytype -k -j "${N_CPU}" "${TESTDIR}"
   fi
@@ -67,13 +67,13 @@ cd examples/baselines/rl_continuous
 
 # Run tests for distributed examples.
 # For each of them make sure StepsLimiter reached the limit step count.
-set +x
-set +e
+# set +x
+# set +e
 time python run_ppo.py --run_distributed=True --lp_termination_notice_secs=1 \
   --env_name=gym:MountainCarContinuous-v0 --num_steps=1000 \
   --num_distributed_actors=4 > /tmp/log.txt 2>&1
-set -x
-set -e
+# set -x
+# set -e
 cat /tmp/log.txt
 cat /tmp/log.txt | grep -E 'StepsLimiter: Max steps of [0-9]+ was reached, terminating'
 

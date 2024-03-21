@@ -56,11 +56,13 @@ core_requirements = [
 jax_requirements = [
     'jax==0.4.10',
     'jaxlib==0.4.10',
+    'ml_dtypes==0.2.0',
     'chex',
-    'dm-haiku',
+    'dm-haiku==0.0.10',
     'flax',
     'optax',
     'rlax',
+    'flax'
 ] + tensorflow
 
 tf_requirements = [
