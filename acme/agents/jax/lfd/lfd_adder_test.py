@@ -26,6 +26,7 @@ from absl.testing import absltest
 
 
 class TestStatisticsAdder(adders.Adder):
+  __test__ = False
 
   def __init__(self):
     self.counts = collections.defaultdict(int)

@@ -33,6 +33,7 @@ update_and_validate = functools.partial(
 
 
 class TestNestedSpec(NamedTuple):
+  __test__ = False
   # Note: the fields are intentionally in reverse order to test ordering.
   a: specs.Array
   b: specs.Array
