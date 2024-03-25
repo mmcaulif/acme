@@ -19,7 +19,7 @@ import ctypes
 import threading
 from typing import Any, Callable, Optional
 
-import launchpad
+# import launchpad
 
 _Handler = Callable[[], Any]
 
@@ -44,6 +44,6 @@ def runtime_terminator(callback: Optional[_Handler] = None):
     res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
         ctypes.c_long(worker_id), ctypes.py_object(SystemExit))
     assert res < 2, 'Stopping worker failed'
-  launchpad.register_stop_handler(signal_handler)
+  # launchpad.register_stop_handler(signal_handler)
   yield
-  launchpad.unregister_stop_handler(signal_handler)
+  # launchpad.unregister_stop_handler(signal_handler)

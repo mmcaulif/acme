@@ -200,7 +200,7 @@ class BaseAtariWrapper(abc.ABC, base.EnvironmentWrapper):
 
     # Step on environment multiple times for each selected action.
     for _ in range(self._action_repeats):
-      timestep = self._environment.step([np.array([action])])
+      timestep = self._environment.step(np.array(action))
 
       self._episode_len += 1
       if self._episode_len == self._max_episode_len:
