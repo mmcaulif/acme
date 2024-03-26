@@ -14,7 +14,10 @@
 
 """Tests for the run_experiment function."""
 
-from acme.agents.jax import sac
+import functools
+
+import numpy as np
+from acme.agents.jax import ppo
 from acme.jax import experiments
 from acme.jax.experiments import test_utils as experiment_test_utils
 from acme.testing import fakes
@@ -75,18 +78,18 @@ class RunExperimentTest(test_utils.TestCase):
 
     def environment_factory(seed: int) -> dm_env.Environment:
       del seed
-      return fakes.ContinuousEnvironment(
-          episode_length=10, action_dim=3, observation_dim=5)
+      return fakes.DiscreteEnvironment(
+          episode_length=10, num_actions=4, num_observations=1, obs_shape=(8,), obs_dtype=np.float32)
 
     num_train_steps = 100
 
-    sac_config = sac.SACConfig()
+    ppo_config = ppo.PPOConfig()
     checkpointing_config = experiments.CheckpointingConfig(
         directory=self.get_tempdir(), time_delta_minutes=0)
     return experiments.ExperimentConfig(
-        builder=sac.SACBuilder(sac_config),
+        builder=ppo.PPOBuilder(ppo_config),
         environment_factory=environment_factory,
-        network_factory=sac.make_networks,
+        network_factory=functools.partial(ppo.make_discrete_networks, use_conv=False),
         seed=0,
         max_num_actor_steps=num_train_steps,
         checkpointing=checkpointing_config)

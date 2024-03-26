@@ -18,7 +18,7 @@ from typing import Iterator
 
 from acme import specs
 from acme import types
-from acme.agents.jax import crr
+from acme.agents.jax import cql_cts
 from acme.jax import experiments
 from acme.jax import types as jax_types
 from acme.jax.experiments import test_utils as experiment_test_utils
@@ -81,7 +81,7 @@ class RunOfflineExperimentTest(test_utils.TestCase):
     def environment_factory(seed: int) -> dm_env.Environment:
       del seed
       return fakes.ContinuousEnvironment(
-          episode_length=10, action_dim=3, observation_dim=5)
+          episode_length=10, action_dim=3, observation_dim=5, bounded=True)
 
     environment = environment_factory(seed=1)
     environment_spec = specs.make_environment_spec(environment)
@@ -92,14 +92,13 @@ class RunOfflineExperimentTest(test_utils.TestCase):
       batch_size = 64
       return fakes.transition_iterator_from_spec(environment_spec)(batch_size)
 
-    crr_config = crr.CRRConfig()
-    crr_builder = crr.CRRBuilder(
-        crr_config, policy_loss_coeff_fn=crr.policy_loss_coeff_advantage_exp)
+    cql_config = cql_cts.CQLConfig(batch_size=64, cql_num_samples=1)
+    cql_builder = cql_cts.CQLBuilder(cql_config)
     checkpointing_config = experiments.CheckpointingConfig(
         directory=self.get_tempdir(), time_delta_minutes=0)
     return experiments.OfflineExperimentConfig(
-        builder=crr_builder,
-        network_factory=crr.make_networks,
+        builder=cql_builder,
+        network_factory=cql_cts.make_networks,
         demonstration_dataset_factory=demonstration_dataset_factory,
         environment_factory=environment_factory,
         max_num_learner_steps=num_learner_steps,

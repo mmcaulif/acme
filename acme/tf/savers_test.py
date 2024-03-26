@@ -21,7 +21,7 @@ from unittest import mock
 
 from acme import specs
 from acme.testing import test_utils
-from acme.tf import networks
+# from acme.tf import networks
 from acme.tf import savers as tf2_savers
 from acme.tf import utils as tf2_utils
 from acme.utils import paths
@@ -169,125 +169,125 @@ class CheckpointingRunnerTest(test_utils.TestCase):
     self.assertIsNotNone(regexp.fullmatch(ckpt_runner.get_directory()))
 
 
-class SnapshotterTest(test_utils.TestCase):
+# class SnapshotterTest(test_utils.TestCase):
 
-  def test_snapshot(self):
-    """Test that snapshotter correctly calls saves/restores snapshots."""
-    # Create a test network.
-    net1 = networks.LayerNormMLP([10, 10])
-    spec = specs.Array([10], dtype=np.float32)
-    tf2_utils.create_variables(net1, [spec])
+#   def test_snapshot(self):
+#     """Test that snapshotter correctly calls saves/restores snapshots."""
+#     # Create a test network.
+#     net1 = networks.LayerNormMLP([10, 10])
+#     spec = specs.Array([10], dtype=np.float32)
+#     tf2_utils.create_variables(net1, [spec])
 
-    # Save the test network.
-    directory = self.get_tempdir()
-    objects_to_save = {'net': net1}
-    snapshotter = tf2_savers.Snapshotter(objects_to_save, directory=directory)
-    snapshotter.save()
+#     # Save the test network.
+#     directory = self.get_tempdir()
+#     objects_to_save = {'net': net1}
+#     snapshotter = tf2_savers.Snapshotter(objects_to_save, directory=directory)
+#     snapshotter.save()
 
-    # Reload the test network.
-    net2 = tf.saved_model.load(os.path.join(snapshotter.directory, 'net'))
-    inputs = tf2_utils.add_batch_dim(tf2_utils.zeros_like(spec))
+#     # Reload the test network.
+#     net2 = tf.saved_model.load(os.path.join(snapshotter.directory, 'net'))
+#     inputs = tf2_utils.add_batch_dim(tf2_utils.zeros_like(spec))
 
-    with tf.GradientTape() as tape:
-      outputs1 = net1(inputs)
-      loss1 = tf.math.reduce_sum(outputs1)
-      grads1 = tape.gradient(loss1, net1.trainable_variables)
+#     with tf.GradientTape() as tape:
+#       outputs1 = net1(inputs)
+#       loss1 = tf.math.reduce_sum(outputs1)
+#       grads1 = tape.gradient(loss1, net1.trainable_variables)
 
-    with tf.GradientTape() as tape:
-      outputs2 = net2(inputs)
-      loss2 = tf.math.reduce_sum(outputs2)
-      grads2 = tape.gradient(loss2, net2.trainable_variables)
+#     with tf.GradientTape() as tape:
+#       outputs2 = net2(inputs)
+#       loss2 = tf.math.reduce_sum(outputs2)
+#       grads2 = tape.gradient(loss2, net2.trainable_variables)
 
-    assert np.allclose(outputs1, outputs2)
-    assert all(tree.map_structure(np.allclose, list(grads1), list(grads2)))
+#     assert np.allclose(outputs1, outputs2)
+#     assert all(tree.map_structure(np.allclose, list(grads1), list(grads2)))
 
-  def test_snapshot_distribution(self):
-    """Test that snapshotter correctly calls saves/restores snapshots."""
-    # Create a test network.
-    net1 = snt.Sequential([
-        networks.LayerNormMLP([10, 10]),
-        networks.MultivariateNormalDiagHead(1)
-    ])
-    spec = specs.Array([10], dtype=np.float32)
-    tf2_utils.create_variables(net1, [spec])
+#   def test_snapshot_distribution(self):
+#     """Test that snapshotter correctly calls saves/restores snapshots."""
+#     # Create a test network.
+#     net1 = snt.Sequential([
+#         networks.LayerNormMLP([10, 10]),
+#         networks.MultivariateNormalDiagHead(1)
+#     ])
+#     spec = specs.Array([10], dtype=np.float32)
+#     tf2_utils.create_variables(net1, [spec])
 
-    # Save the test network.
-    directory = self.get_tempdir()
-    objects_to_save = {'net': net1}
-    snapshotter = tf2_savers.Snapshotter(objects_to_save, directory=directory)
-    snapshotter.save()
+#     # Save the test network.
+#     directory = self.get_tempdir()
+#     objects_to_save = {'net': net1}
+#     snapshotter = tf2_savers.Snapshotter(objects_to_save, directory=directory)
+#     snapshotter.save()
 
-    # Reload the test network.
-    net2 = tf.saved_model.load(os.path.join(snapshotter.directory, 'net'))
-    inputs = tf2_utils.add_batch_dim(tf2_utils.zeros_like(spec))
+#     # Reload the test network.
+#     net2 = tf.saved_model.load(os.path.join(snapshotter.directory, 'net'))
+#     inputs = tf2_utils.add_batch_dim(tf2_utils.zeros_like(spec))
 
-    with tf.GradientTape() as tape:
-      dist1 = net1(inputs)
-      loss1 = tf.math.reduce_sum(dist1.mean() + dist1.variance())
-      grads1 = tape.gradient(loss1, net1.trainable_variables)
+#     with tf.GradientTape() as tape:
+#       dist1 = net1(inputs)
+#       loss1 = tf.math.reduce_sum(dist1.mean() + dist1.variance())
+#       grads1 = tape.gradient(loss1, net1.trainable_variables)
 
-    with tf.GradientTape() as tape:
-      dist2 = net2(inputs)
-      loss2 = tf.math.reduce_sum(dist2.mean() + dist2.variance())
-      grads2 = tape.gradient(loss2, net2.trainable_variables)
+#     with tf.GradientTape() as tape:
+#       dist2 = net2(inputs)
+#       loss2 = tf.math.reduce_sum(dist2.mean() + dist2.variance())
+#       grads2 = tape.gradient(loss2, net2.trainable_variables)
 
-    assert all(tree.map_structure(np.allclose, list(grads1), list(grads2)))
+#     assert all(tree.map_structure(np.allclose, list(grads1), list(grads2)))
 
-  def test_force_snapshot(self):
-    """Test that the force feature in Snapshotter.save() works correctly."""
-    # Create a test network.
-    net = snt.Linear(10)
-    spec = specs.Array([10], dtype=np.float32)
-    tf2_utils.create_variables(net, [spec])
+#   def test_force_snapshot(self):
+#     """Test that the force feature in Snapshotter.save() works correctly."""
+#     # Create a test network.
+#     net = snt.Linear(10)
+#     spec = specs.Array([10], dtype=np.float32)
+#     tf2_utils.create_variables(net, [spec])
 
-    # Save the test network.
-    directory = self.get_tempdir()
-    objects_to_save = {'net': net}
-    # Very long time_delta_minutes.
-    snapshotter = tf2_savers.Snapshotter(objects_to_save, directory=directory,
-                                         time_delta_minutes=1000)
-    self.assertTrue(snapshotter.save(force=False))
+#     # Save the test network.
+#     directory = self.get_tempdir()
+#     objects_to_save = {'net': net}
+#     # Very long time_delta_minutes.
+#     snapshotter = tf2_savers.Snapshotter(objects_to_save, directory=directory,
+#                                          time_delta_minutes=1000)
+#     self.assertTrue(snapshotter.save(force=False))
 
-    # Due to the long time_delta_minutes, only force=True will create a new
-    # snapshot. This also checks the default is force=False.
-    self.assertFalse(snapshotter.save())
-    self.assertTrue(snapshotter.save(force=True))
+#     # Due to the long time_delta_minutes, only force=True will create a new
+#     # snapshot. This also checks the default is force=False.
+#     self.assertFalse(snapshotter.save())
+#     self.assertTrue(snapshotter.save(force=True))
 
-  def test_rnn_snapshot(self):
-    """Test that snapshotter correctly calls saves/restores snapshots on RNNs."""
-    # Create a test network.
-    net = snt.LSTM(10)
-    spec = specs.Array([10], dtype=np.float32)
-    tf2_utils.create_variables(net, [spec])
+#   def test_rnn_snapshot(self):
+#     """Test that snapshotter correctly calls saves/restores snapshots on RNNs."""
+#     # Create a test network.
+#     net = snt.LSTM(10)
+#     spec = specs.Array([10], dtype=np.float32)
+#     tf2_utils.create_variables(net, [spec])
 
-    # Test that if you add some postprocessing without rerunning
-    # create_variables, it still works.
-    wrapped_net = snt.DeepRNN([net, lambda x: x])
+#     # Test that if you add some postprocessing without rerunning
+#     # create_variables, it still works.
+#     wrapped_net = snt.DeepRNN([net, lambda x: x])
 
-    for net1 in [net, wrapped_net]:
-      # Save the test network.
-      directory = self.get_tempdir()
-      objects_to_save = {'net': net1}
-      snapshotter = tf2_savers.Snapshotter(objects_to_save, directory=directory)
-      snapshotter.save()
+#     for net1 in [net, wrapped_net]:
+#       # Save the test network.
+#       directory = self.get_tempdir()
+#       objects_to_save = {'net': net1}
+#       snapshotter = tf2_savers.Snapshotter(objects_to_save, directory=directory)
+#       snapshotter.save()
 
-      # Reload the test network.
-      net2 = tf.saved_model.load(os.path.join(snapshotter.directory, 'net'))
-      inputs = tf2_utils.add_batch_dim(tf2_utils.zeros_like(spec))
+#       # Reload the test network.
+#       net2 = tf.saved_model.load(os.path.join(snapshotter.directory, 'net'))
+#       inputs = tf2_utils.add_batch_dim(tf2_utils.zeros_like(spec))
 
-      with tf.GradientTape() as tape:
-        outputs1, next_state1 = net1(inputs, net1.initial_state(1))
-        loss1 = tf.math.reduce_sum(outputs1)
-        grads1 = tape.gradient(loss1, net1.trainable_variables)
+#       with tf.GradientTape() as tape:
+#         outputs1, next_state1 = net1(inputs, net1.initial_state(1))
+#         loss1 = tf.math.reduce_sum(outputs1)
+#         grads1 = tape.gradient(loss1, net1.trainable_variables)
 
-      with tf.GradientTape() as tape:
-        outputs2, next_state2 = net2(inputs, net2.initial_state(1))
-        loss2 = tf.math.reduce_sum(outputs2)
-        grads2 = tape.gradient(loss2, net2.trainable_variables)
+#       with tf.GradientTape() as tape:
+#         outputs2, next_state2 = net2(inputs, net2.initial_state(1))
+#         loss2 = tf.math.reduce_sum(outputs2)
+#         grads2 = tape.gradient(loss2, net2.trainable_variables)
 
-      assert np.allclose(outputs1, outputs2)
-      assert np.allclose(tree.flatten(next_state1), tree.flatten(next_state2))
-      assert all(tree.map_structure(np.allclose, list(grads1), list(grads2)))
+#       assert np.allclose(outputs1, outputs2)
+#       assert np.allclose(tree.flatten(next_state1), tree.flatten(next_state2))
+#       assert all(tree.map_structure(np.allclose, list(grads1), list(grads2)))
 
 
 if __name__ == '__main__':

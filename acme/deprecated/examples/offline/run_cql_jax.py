@@ -20,7 +20,7 @@ import acme
 from acme import specs
 from acme.agents.jax import actor_core as actor_core_lib
 from acme.agents.jax import actors
-from acme.agents.jax import cql
+from acme.agents.jax import cql_cts
 from acme.datasets import tfds
 from acme.examples.offline import helpers as gym_helpers
 from acme.jax import variable_utils
@@ -71,10 +71,10 @@ def main(_):
       transitions_iterator, key=key_demonstrations, batch_size=FLAGS.batch_size)
 
   # Create the networks to optimize.
-  networks = cql.make_networks(environment_spec)
+  networks = cql_cts.make_networks(environment_spec)
 
   # Create the learner.
-  learner = cql.CQLLearner(
+  learner = cql_cts.CQLLearner(
       batch_size=FLAGS.batch_size,
       networks=networks,
       random_key=key_learner,
