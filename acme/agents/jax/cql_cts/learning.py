@@ -18,8 +18,8 @@ import time
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple
 import acme
 from acme import types
-from acme.agents.jax.cql.networks import apply_and_sample_n
-from acme.agents.jax.cql.networks import CQLNetworks
+from acme.agents.jax.cql_cts.networks import apply_and_sample_n
+from acme.agents.jax.cql_cts.networks import CQLNetworks
 from acme.jax import networks as networks_lib
 from acme.jax import utils
 from acme.utils import counting

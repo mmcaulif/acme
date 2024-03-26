@@ -14,8 +14,8 @@
 
 """Implementation of the CQL agent."""
 
-from acme.agents.jax.cql.builder import CQLBuilder
-from acme.agents.jax.cql.config import CQLConfig
-from acme.agents.jax.cql.learning import CQLLearner
-from acme.agents.jax.cql.networks import CQLNetworks
-from acme.agents.jax.cql.networks import make_networks
+from acme.agents.jax.cql_cts.builder import CQLBuilder
+from acme.agents.jax.cql_cts.config import CQLConfig
+from acme.agents.jax.cql_cts.learning import CQLLearner
+from acme.agents.jax.cql_cts.networks import CQLNetworks
+from acme.agents.jax.cql_cts.networks import make_networks

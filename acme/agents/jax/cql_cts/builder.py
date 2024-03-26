@@ -21,9 +21,9 @@ from acme import types
 from acme.agents.jax import actor_core as actor_core_lib
 from acme.agents.jax import actors
 from acme.agents.jax import builders
-from acme.agents.jax.cql import config as cql_config
-from acme.agents.jax.cql import learning
-from acme.agents.jax.cql import networks as cql_networks
+from acme.agents.jax.cql_cts import config as cql_config
+from acme.agents.jax.cql_cts import learning
+from acme.agents.jax.cql_cts import networks as cql_networks
 from acme.jax import networks as networks_lib
 from acme.jax import variable_utils
 from acme.utils import counting

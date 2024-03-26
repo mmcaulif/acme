@@ -15,7 +15,7 @@
 """Tests for the CQL agent."""
 
 from acme import specs
-from acme.agents.jax import cql
+from acme.agents.jax import cql_cts
 from acme.testing import fakes
 import jax
 import optax
@@ -36,11 +36,11 @@ class CQLTest(absltest.TestCase):
     spec = specs.make_environment_spec(environment)
 
     # Construct the agent.
-    networks = cql.make_networks(
+    networks = cql_cts.make_networks(
         spec, hidden_layer_sizes=(8, 8))
     dataset = fakes.transition_iterator(environment)
     key = jax.random.PRNGKey(seed)
-    learner = cql.CQLLearner(
+    learner = cql_cts.CQLLearner(
         batch_size,
         networks,
         key,
